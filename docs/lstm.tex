@@ -1,0 +1,179 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+
+\title{Long Short Term Memory}
+\author{Marco Marini}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\begin{abstract}
+Long Short Term Memory (LSTM)
+\end{abstract}
+
+\section{General}
+
+The LSTM is a recurrent neural network built up  by LSTM cell.
+
+Several neurons compose the LSTM cell:
+
+\begin{enumerate}
+	\item input neuron
+	\item input gate
+	\item CEC (Constant Error Carrousels)
+	\item forget gate
+	\item output activation function
+	\item output gate
+\end{enumerate}
+
+The input neuron and each gate receive values from input signals and the previuos outputs (RNN).
+
+The output signal of LSTM is
+
+\[ 
+	y(t) = y^h(t) \cdot y^f(t)
+\]
+where 
+\[
+	y^f(t) = f\left( z^f(t) \right) 
+\]
+\[ 
+	z^f(t) = \sum w^f_i I_i(t)
+\]
+\[
+	y^h(t) = h\left( z^h(t) \right) 
+\]
+\[ 
+	z^h(t) = y^g(t) \cdot y^s(t) + z^h(t-1) \cdot y^r(t)
+\]
+\[ 
+	y^r(t) = r \left( z^r(t) \right)
+\]
+\[ 
+	z^r(t) = \sum w^r_i I_i(t)
+\]
+\[ 
+	y^g(t) = g \left( z^g(t) \right)
+\]
+\[ 
+	z^g(t) = \sum w^g_i I_i(t)
+\]
+\[ 
+	y^s(t) = s \left( z^s(t) \right)
+\]
+\[ 
+	z^s(t) = \sum w^s_i I_i(t)
+\]
+
+\section{Back propagation}
+
+Let's now derive the back propagation error
+
+\[ 
+	\frac{\partial y(t)}{\partial w^f_i} = y^h(t) \frac{\partial y^f(t)}{\partial w^f_i}
+\]
+\[ 
+	\frac{\partial y^f(t)}{\partial w^f_i} =
+		\frac{\partial f\left( z^f(t) \right)}{\partial z^f(t)}
+		\cdot \frac{\partial z^f(t) }{\partial  w^f_i}
+		= f'(t) \cdot  I_i(t)
+\]
+
+
+\[
+\begin{array}{c}
+	\frac{\partial y(t)}{\partial w^r_i} = y^f(t) \frac{\partial y^h(t)}{\partial w^r_i} =
+\\
+	= y^f(t) \cdot h'(t) \frac{\partial z^h(t)}{\partial w^r_i} = 
+\\
+	= y^f(t) \cdot h'(t) z^h(t-1) \cdot \frac{\partial y^r(t)}{\partial w^r_i} = 
+\\
+	= y^f(t) \cdot h'(t) z^h(t-1) \cdot r'(t) \cdot \frac{\partial z^r(t)}{\partial w^r_i}
+\\
+	= y^f(t) \cdot h'(t) z^h(t-1) \cdot r'(t) \cdot I_i(t)
+\end{array}
+\]
+
+\[
+\begin{array}{c}
+	\frac{\partial y(t)}{\partial w^s_i} = y^f(t) \frac{\partial y^h(t)}{\partial w^s_i} =
+\\
+	= y^f(t) \cdot h'(t) \frac{\partial z^h(t)}{\partial w^s_i} = 
+\\
+	= y^f(t) \cdot h'(t) \cdot y^g(t) \frac{\partial y^s(t)}{\partial w^s_i} = 
+\\
+	= y^f(t) \cdot h'(t) \cdot y^g(t) s'(t) \cdot \frac{\partial z^s(t)}{\partial w^s_i} = 
+\\
+	= y^f(t) \cdot h'(t) \cdot y^g(t) \cdot s'(t) \cdot I_i(t)
+\end{array}
+\]
+
+\begin{eqnarray}
+	\frac{\partial y(t)}{\partial w^f_i} = y^h(t) \cdot f'(t) \cdot I_i(t)
+\\
+	\frac{\partial y(t)}{\partial w^r_i} = y^f(t) \cdot h'(t) z^h(t-1) \cdot r'(t) \cdot I_i(t)
+\\
+	\frac{\partial y(t)}{\partial w^s_i} = y^f(t) \cdot h'(t) \cdot y^g(t) \cdot s'(t) \cdot I_i(t)
+\\
+	\frac{\partial y(t)}{\partial w^g_i} = y^f(t) \cdot h'(t) \cdot y^s(t) \cdot g'(t) \cdot I_i(t)
+\end{eqnarray}
+
+
+\section{Error}
+
+Let be \[ X_{ijk} \] the input signals $ j = 1, \cdots, m$ of sample $ i = 1, \cdots, n$ at time $ k = 1, \cdots, t_i$ and \[ Y_{ik} \] the expected output signal of sample $ i = 1, \cdots, n$ at time $ k = 1, \cdots, t_i$
+
+The total error of network is
+
+\[
+	\delta = \frac{1}{2} \sum_{ik} \left[ Y_{ik} - y(k, I_{ijk})\right] ^ 2
+\]
+
+
+\section{Test}
+
+The test is composed by a set of samples with 2 input signals.
+
+The output is a JK memory latch
+
+\begin{tabular}{|c|c|c|}
+	\hline J & K & Y \\ 
+	\hline 0 & 0 & Y \\ 
+	\hline 0 & 1 & 0 \\ 
+	\hline 1 & 0 & 1 \\ 
+	\hline 1 & 1 & !Y \\ 
+	\hline 
+\end{tabular}
+
+The activation functions are
+
+\[ 
+\begin{array}{l}
+f(x) = tanh(x) \\
+g(x) = tanh(x) \\
+h(x) = x \\
+r(x) = tanh(x) \\
+s(x) = \tanh(x) \\
+\end{array}
+\]
+
+Gradients are:
+
+\begin{eqnarray}
+	\frac{\partial y(t)}{\partial w^f_i} = y^h(t) \cdot \left[ 1 - y^f(t)\right] ^2 \cdot I_i(t)
+\\
+	\frac{\partial y(t)}{\partial w^r_i} = y^f(t) \cdot z^h(t-1) \cdot
+	\left[ 1 - y^r(t) \right]^2  \cdot I_i(t)
+\\
+	\frac{\partial y(t)}{\partial w^s_i} = y^f(t) \cdot y^g(t) \cdot \left[ 1 - y^s(t) \right]^2 \cdot I_i(t)
+\\
+	\frac{\partial y(t)}{\partial w^g_i} = y^f(t) \cdot y^s(t) \cdot \left[ 1 - y^g(t) \right]^2 \cdot I_i(t)
+\end{eqnarray}
+
+
+\end{document}

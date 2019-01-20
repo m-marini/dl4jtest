@@ -1,0 +1,11 @@
+/bin/
+/project/
+/target/
+/.project
+/.scalastyle
+/*~
+/.classpath
+/.cache-tests
+/.cache-main
+/.settings/
+/src/test/resources/datatest/

@@ -18,6 +18,10 @@ function generateSimpleTestData()
 endfunction
 
 function generateSamples(N, MIN_LEN, MAX_LEN, MIN_TARGETS, MAX_TARGETS, file)
+  [rc msg] = mkdir(file);
+  if (rc != 1)
+    printf "%s", msg;
+  endif
   for i = 1 : N
     len = randi(MAX_LEN - MIN_LEN + 1) + MIN_LEN - 1;
     maxTargets = min(len, MAX_TARGETS);

@@ -9,10 +9,11 @@ function generateSimpleTestData()
   MIN_TARGETS = 1
   MAX_TARGETS = 3
   FILE = "../src/test/resources/datatest";
+  FILE_MODE = "singleFile";
   SEED = [1 2 3];
   printf "Generating test data ...\n";
   rand("state", SEED);
-  generateSamples(NO_SAMPLES, MIN_LEN, MAX_LEN, MIN_TARGETS, MAX_TARGETS, FILE);
+  generateSamples(NO_SAMPLES, MIN_LEN, MAX_LEN, MIN_TARGETS, MAX_TARGETS, FILE, FILE_MODE);
   printf "Completed.\n";
  
 endfunction
@@ -28,8 +29,12 @@ function generateSamples(N, MIN_LEN, MAX_LEN, MIN_TARGETS, MAX_TARGETS, file)
     minTargets = min(maxTargets, MIN_TARGETS);
     noTargets = randi(maxTargets - minTargets + 1) + minTargets - 1;
     [X Y] = generateSequence(len, noTargets);
-    csvwrite([file "/features_" int2str(i - 1) ".csv"], X);
-    csvwrite([file "/labels_" int2str(i - 1) ".csv"], Y);
+    if (FILEMODE = "singleFile")
+      csvwrite([file "/sample_" int2str(i - 1) ".csv"], [X Y]);
+    else
+      csvwrite([file "/features_" int2str(i - 1) ".csv"], X);
+      csvwrite([file "/labels_" int2str(i - 1) ".csv"], Y);
+    endif
   endfor
 endfunction
 

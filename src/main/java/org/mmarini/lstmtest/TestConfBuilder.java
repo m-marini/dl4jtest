@@ -41,13 +41,13 @@ public class TestConfBuilder {
 	 * @return
 	 */
 	public MultiLayerConfiguration build() {
-		final NeuralNetConfiguration.Builder builder = new NeuralNetConfiguration.Builder().weightInit(WeightInit.XAVIER)
-				.optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT);
-		final LSTM.Builder lstmBuilder = new LSTM.Builder().units(noLstmUnits).nIn(noInputUnits)
-				.activation(Activation.TANH);
-		final RnnOutputLayer.Builder outLayerBuilder = new RnnOutputLayer.Builder(LossFunction.MEAN_SQUARED_LOGARITHMIC_ERROR)
-				.activation(Activation.IDENTITY).nOut(noOutputUnits).nIn(noLstmUnits);
-		final MultiLayerConfiguration conf = builder.list(lstmBuilder.build(), outLayerBuilder.build()).build();
+		final NeuralNetConfiguration.Builder builder = new NeuralNetConfiguration.Builder()
+				.weightInit(WeightInit.XAVIER).optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT);
+		final LSTM lstmLayer = new LSTM.Builder().units(noLstmUnits).nIn(noInputUnits).activation(Activation.TANH)
+				.build();
+		final RnnOutputLayer outLayer = new RnnOutputLayer.Builder(LossFunction.MEAN_SQUARED_LOGARITHMIC_ERROR)
+				.activation(Activation.IDENTITY).nOut(noOutputUnits).nIn(noLstmUnits).build();
+		final MultiLayerConfiguration conf = builder.list(lstmLayer, outLayer).build();
 		return conf;
 	}
 }
